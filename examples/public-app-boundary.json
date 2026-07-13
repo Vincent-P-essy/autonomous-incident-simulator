@@ -1,0 +1,92 @@
+{
+  "schema_version": "1.0",
+  "id": "public-app-boundary",
+  "title": "Public application boundary failure",
+  "description": "An inert application-security narrative demonstrates boundary failure, account discovery, and access to synthetic records without sending a request to any real service.",
+  "seed": 889302,
+  "start_time": "2026-07-12T16:00:00Z",
+  "objective": {
+    "kind": "compromise_asset",
+    "target_role": "public-web-app",
+    "description": "Demonstrate simulated privileged access to a public business application."
+  },
+  "constraints": {
+    "max_duration_seconds": 600,
+    "max_steps": 5,
+    "min_techniques": 3,
+    "required_techniques": ["T1190", "T1087", "T1005"],
+    "allowed_primitives": [
+      "access.public_application",
+      "discovery.local_accounts",
+      "collection.local_records"
+    ],
+    "forbidden_capabilities": ["malware", "arbitrary_execution", "destructive", "real_network"],
+    "required_telemetry_sources": ["web_gateway", "web_app", "application_audit", "siem"]
+  },
+  "topology": {
+    "profile": "web-application-small",
+    "required_roles": [],
+    "user_count": 6
+  },
+  "detection_criteria": [
+    {
+      "id": "boundary-failure",
+      "title": "Gateway boundary signal aligns with a privileged response",
+      "ordered_event_types": ["application_boundary_violation", "unexpected_privileged_response"],
+      "required_sources": ["web_gateway", "web_app"],
+      "max_span_seconds": 90,
+      "minimum_matching_events": 2
+    },
+    {
+      "id": "discovery-and-read",
+      "title": "Account discovery is followed by a bulk record signal",
+      "ordered_event_types": ["account_directory_read", "sensitive_records_read", "bulk_read_signal"],
+      "required_sources": ["application_audit", "siem"],
+      "max_span_seconds": 180,
+      "minimum_matching_events": 3
+    }
+  ],
+  "expected_results": [
+    {
+      "id": "objective",
+      "title": "Application objective reached",
+      "kind": "objective_reached",
+      "value": true
+    },
+    {
+      "id": "technique-depth",
+      "title": "Three distinct techniques are represented",
+      "kind": "minimum_techniques",
+      "value": 3
+    },
+    {
+      "id": "duration",
+      "title": "Scenario completes within ten minutes",
+      "kind": "duration_at_most",
+      "value": 600
+    },
+    {
+      "id": "network-absent",
+      "title": "No real network capability is present",
+      "kind": "forbidden_capability_absent",
+      "value": "real_network"
+    }
+  ],
+  "analyst_questions": [
+    {
+      "id": "q-boundary",
+      "prompt": "Which two independent sources establish the application boundary failure?",
+      "evidence_hints": ["application_boundary_violation", "unexpected_privileged_response"]
+    },
+    {
+      "id": "q-sequence",
+      "prompt": "How does account discovery strengthen the interpretation of the later record access?",
+      "evidence_hints": ["account_directory_read", "account_discovery_signal", "sensitive_records_read"]
+    },
+    {
+      "id": "q-remediation",
+      "prompt": "Which application control would block the earliest step while preserving public availability?",
+      "evidence_hints": ["application_boundary_violation"]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+# Fully pinned development-only quality tooling for Python 3.10-3.12.
+mypy==1.16.1
+mypy_extensions==1.1.0
+pathspec==1.1.1
+ruff==0.12.2
+tomli==2.4.1
+typing_extensions==4.16.0

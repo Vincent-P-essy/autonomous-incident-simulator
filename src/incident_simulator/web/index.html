@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <title>Incident Simulation Control Room</title>
+    <link rel="stylesheet" href="/assets/styles.css">
+  </head>
+  <body>
+    <main>
+      <header class="hero">
+        <div>
+          <p class="eyebrow">SAFE RANGE / DETERMINISTIC ENGINE</p>
+          <h1>Incident Simulation Control Room</h1>
+          <p class="lede">Inspect a reproducible attack narrative without executing an attack.</p>
+        </div>
+        <span class="status" id="health">CHECKING</span>
+      </header>
+
+      <section class="control panel" aria-labelledby="scenario-heading">
+        <div>
+          <h2 id="scenario-heading">Scenario</h2>
+          <p id="scenario-description">Loading the signed-off scenario catalog…</p>
+        </div>
+        <div class="selector">
+          <label for="scenario-select">Approved scenario</label>
+          <select id="scenario-select"></select>
+          <button id="run-button" type="button">Run pure simulation</button>
+        </div>
+      </section>
+
+      <p id="error" class="error" role="alert" hidden></p>
+
+      <section class="metrics" aria-label="Simulation metrics">
+        <article><span>Duration</span><strong id="metric-duration">—</strong></article>
+        <article><span>Techniques</span><strong id="metric-techniques">—</strong></article>
+        <article><span>Events</span><strong id="metric-events">—</strong></article>
+        <article><span>Sources</span><strong id="metric-sources">—</strong></article>
+        <article><span>Checks</span><strong id="metric-checks">—</strong></article>
+      </section>
+
+      <section class="grid">
+        <article class="panel wide">
+          <div class="section-heading">
+            <div><p class="eyebrow">CAUSAL SEQUENCE</p><h2>Plan and ground truth</h2></div>
+            <code id="digest">No report yet</code>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Primitive</th><th>Technique</th><th>Duration</th></tr></thead>
+              <tbody id="plan-body"><tr><td colspan="4">Run a scenario to populate the plan.</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+
+        <article class="panel">
+          <p class="eyebrow">DETECTION CONTRACT</p>
+          <h2>Criteria</h2>
+          <ul id="detection-list" class="checks"><li>Awaiting simulation</li></ul>
+        </article>
+
+        <article class="panel">
+          <p class="eyebrow">INVARIANTS</p>
+          <h2>Safety</h2>
+          <ul id="safety-list" class="checks"><li>No external action is available.</li></ul>
+        </article>
+
+        <article class="panel wide">
+          <p class="eyebrow">MULTI-SOURCE TELEMETRY</p>
+          <h2>Event timeline</h2>
+          <div class="table-wrap timeline">
+            <table>
+              <thead><tr><th>Time</th><th>Source</th><th>Event</th><th>Technique</th></tr></thead>
+              <tbody id="event-body"><tr><td colspan="4">No events yet.</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+    </main>
+    <script src="/assets/app.js" defer></script>
+  </body>
+</html>

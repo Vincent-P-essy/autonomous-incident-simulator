@@ -1,0 +1,3 @@
+# Exact build-tool version used by packaging and CI.
+# The engine, API, dashboard, tests, and quality gate have no third-party runtime dependency.
+setuptools==75.8.0

@@ -1,0 +1,99 @@
+{
+  "schema_version": "1.0",
+  "id": "file-share-lateral-movement",
+  "title": "Identity-led movement to a sensitive file share",
+  "description": "A low-rate synthetic authentication sequence progresses through share discovery and SMB access to collection of inert business records.",
+  "seed": 41017,
+  "start_time": "2026-07-12T13:15:00Z",
+  "objective": {
+    "kind": "collect_sensitive_data",
+    "target_role": "file-server",
+    "description": "Collect synthetic sensitive records from a simulated file server."
+  },
+  "constraints": {
+    "max_duration_seconds": 1200,
+    "max_steps": 7,
+    "min_techniques": 5,
+    "required_techniques": ["T1110.003", "T1078", "T1135", "T1021.002", "T1005"],
+    "allowed_primitives": [
+      "credential.password_spray",
+      "identity.valid_account",
+      "discovery.network_shares",
+      "lateral.smb_valid_account",
+      "collection.local_records"
+    ],
+    "forbidden_capabilities": ["malware", "arbitrary_execution", "destructive", "real_network"],
+    "required_telemetry_sources": ["identity", "network", "file_audit", "application_audit", "siem"]
+  },
+  "topology": {
+    "profile": "mixed-enterprise-small",
+    "required_roles": ["file-server"],
+    "user_count": 20
+  },
+  "detection_criteria": [
+    {
+      "id": "spray-pattern",
+      "title": "Repeated identity failures followed by a success",
+      "ordered_event_types": [
+        "authentication_failure",
+        "authentication_failure",
+        "authentication_failure",
+        "authentication_success"
+      ],
+      "required_sources": ["identity"],
+      "max_span_seconds": 300,
+      "minimum_matching_events": 4
+    },
+    {
+      "id": "share-to-collection",
+      "title": "Share enumeration progresses to a data read",
+      "ordered_event_types": ["share_enumeration", "share_session_opened", "sensitive_records_read"],
+      "required_sources": ["network", "file_audit", "application_audit"],
+      "max_span_seconds": 480,
+      "minimum_matching_events": 3
+    }
+  ],
+  "expected_results": [
+    {
+      "id": "objective",
+      "title": "Synthetic records are collected",
+      "kind": "objective_reached",
+      "value": true
+    },
+    {
+      "id": "technique-depth",
+      "title": "Five distinct techniques are represented",
+      "kind": "minimum_techniques",
+      "value": 5
+    },
+    {
+      "id": "duration",
+      "title": "Scenario completes within twenty minutes",
+      "kind": "duration_at_most",
+      "value": 1200
+    },
+    {
+      "id": "destructive-absent",
+      "title": "No destructive capability is present",
+      "kind": "forbidden_capability_absent",
+      "value": "destructive"
+    }
+  ],
+  "analyst_questions": [
+    {
+      "id": "q-spray",
+      "prompt": "What timing and identity evidence distinguishes the simulated spray from normal login mistakes?",
+      "evidence_hints": ["authentication_failure", "authentication_success"]
+    },
+    {
+      "id": "q-lateral",
+      "prompt": "Which events prove the transition from discovery to an authenticated share session?",
+      "evidence_hints": ["share_enumeration", "share_listed", "share_session_opened"]
+    },
+    {
+      "id": "q-control",
+      "prompt": "Which least-privilege change would remove the collection path?",
+      "evidence_hints": ["share_session_opened", "sensitive_records_read"]
+    }
+  ]
+}

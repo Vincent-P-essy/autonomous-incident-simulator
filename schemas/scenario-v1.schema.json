@@ -1,0 +1,163 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/autonomous-incident-simulator/scenario-v1.schema.json",
+  "title": "Autonomous Incident Simulator Scenario DSL 1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "title",
+    "description",
+    "seed",
+    "start_time",
+    "objective",
+    "constraints",
+    "topology",
+    "detection_criteria",
+    "expected_results",
+    "analyst_questions"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$"},
+    "title": {"type": "string", "minLength": 1, "maxLength": 160},
+    "description": {"type": "string", "minLength": 1, "maxLength": 1000},
+    "seed": {"type": "integer", "minimum": 0, "maximum": 2147483647},
+    "start_time": {"type": "string", "format": "date-time"},
+    "objective": {"$ref": "#/$defs/objective"},
+    "constraints": {"$ref": "#/$defs/constraints"},
+    "topology": {"$ref": "#/$defs/topology"},
+    "detection_criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/detectionCriterion"}
+    },
+    "expected_results": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/expectedResult"}
+    },
+    "analyst_questions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/analystQuestion"}
+    }
+  },
+  "$defs": {
+    "nonEmptyUniqueStrings": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 120}
+    },
+    "nonEmptyStrings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1, "maxLength": 120}
+    },
+    "objective": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "target_role", "description"],
+      "properties": {
+        "kind": {"enum": ["compromise_asset", "collect_sensitive_data"]},
+        "target_role": {"type": "string", "minLength": 1, "maxLength": 64},
+        "description": {"type": "string", "minLength": 1, "maxLength": 500}
+      }
+    },
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_duration_seconds",
+        "max_steps",
+        "min_techniques",
+        "required_techniques",
+        "allowed_primitives",
+        "forbidden_capabilities",
+        "required_telemetry_sources"
+      ],
+      "properties": {
+        "max_duration_seconds": {"type": "integer", "minimum": 1, "maximum": 86400},
+        "max_steps": {"type": "integer", "minimum": 1, "maximum": 50},
+        "min_techniques": {"type": "integer", "minimum": 1, "maximum": 50},
+        "required_techniques": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^T[0-9]{4}(\\.[0-9]{3})?$"}
+        },
+        "allowed_primitives": {"$ref": "#/$defs/nonEmptyUniqueStrings"},
+        "forbidden_capabilities": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1, "maxLength": 120}
+        },
+        "required_telemetry_sources": {"$ref": "#/$defs/nonEmptyUniqueStrings"}
+      }
+    },
+    "topology": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile", "required_roles", "user_count"],
+      "properties": {
+        "profile": {"type": "string", "minLength": 1, "maxLength": 64},
+        "required_roles": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1, "maxLength": 64}
+        },
+        "user_count": {"type": "integer", "minimum": 1, "maximum": 200}
+      }
+    },
+    "detectionCriterion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "ordered_event_types",
+        "required_sources",
+        "max_span_seconds",
+        "minimum_matching_events"
+      ],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 64},
+        "title": {"type": "string", "minLength": 1, "maxLength": 160},
+        "ordered_event_types": {"$ref": "#/$defs/nonEmptyStrings"},
+        "required_sources": {"$ref": "#/$defs/nonEmptyUniqueStrings"},
+        "max_span_seconds": {"type": "integer", "minimum": 1, "maximum": 86400},
+        "minimum_matching_events": {"type": "integer", "minimum": 1, "maximum": 100}
+      }
+    },
+    "expectedResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "kind", "value"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 64},
+        "title": {"type": "string", "minLength": 1, "maxLength": 160},
+        "kind": {
+          "enum": [
+            "duration_at_most",
+            "forbidden_capability_absent",
+            "minimum_techniques",
+            "objective_reached",
+            "telemetry_source_present"
+          ]
+        },
+        "value": {"type": ["string", "integer", "boolean"]}
+      }
+    },
+    "analystQuestion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "prompt", "evidence_hints"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 64},
+        "prompt": {"type": "string", "minLength": 1, "maxLength": 500},
+        "evidence_hints": {"$ref": "#/$defs/nonEmptyUniqueStrings"}
+      }
+    }
+  }
+}
