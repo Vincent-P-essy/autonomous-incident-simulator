@@ -1,0 +1,56 @@
+{
+  "jobs": [
+    {
+      "root": ".",
+      "label": "autonomous-incident-simulator",
+      "caption": "The repository's pure simulation mode using inert scenario data. The interface runs locally; no real containment, exploitation or provider call is triggered.",
+      "setup": [
+        [
+          "python",
+          "-m",
+          "pip",
+          "install",
+          "-e",
+          ".[dev]"
+        ],
+        [
+          "python",
+          "-m",
+          "pip",
+          "install",
+          "pytest",
+          "pytest-asyncio",
+          "pytest-cov",
+          "responses",
+          "respx",
+          "socksio"
+        ]
+      ],
+      "commands": [
+        [
+          "python",
+          "-m",
+          "pytest",
+          "-v",
+          "--tb=short"
+        ]
+      ],
+      "server": [
+        "incident-sim",
+        "serve",
+        "--port",
+        "8650"
+      ],
+      "actions": [
+        {
+          "type": "click",
+          "name": "Run pure simulation"
+        },
+        {
+          "type": "wait",
+          "ms": 2500
+        }
+      ]
+    }
+  ]
+}
