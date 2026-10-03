@@ -10,6 +10,12 @@ Descriptions and analyst prompts remain inert data. There is no shell adapter,
 process runner, outbound network client, dynamic plugin loader, or model-generated
 execution path in the engine.
 
+## Dashboard Preview
+
+![Incident simulation plan and outcome for a bundled scenario](docs/screenshots/dashboard-overview.png)
+
+Local dashboard running a pure simulation from the repository’s `examples/` scenarios.
+
 ## Flagship result
 
 `payroll-no-malware` models the objective “compromise the payroll server without
